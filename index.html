@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FX ⚡ Volt</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#00ff88;--gd:#00cc66;--gg:rgba(0,255,136,0.28);
+  --r:#ff3366;--rg:rgba(255,51,102,0.28);
+  --y:#ffe600;--yg:rgba(255,230,0,0.22);
+  --bg:#050d0a;--bg2:#091510;--bg3:#0d1f16;--cb:#060f0b;
+  --br:rgba(0,255,136,0.18);--tx:#ddfff0;--td:#4e7a60;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;
+  max-width:430px;margin:0 auto;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 10% 0%,rgba(0,255,136,.06) 0%,transparent 50%),
+             radial-gradient(ellipse at 90% 100%,rgba(0,160,70,.04) 0%,transparent 50%)}
+
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px 9px;
+  border-bottom:1px solid var(--br);background:rgba(5,13,10,.97);flex-shrink:0;z-index:100;backdrop-filter:blur(14px)}
+.logo{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;letter-spacing:2px;display:flex;align-items:center;gap:3px}
+.logo .fx{color:var(--g)}.logo .b{color:var(--y)}.logo .v{color:var(--y)}
+.hright{display:flex;align-items:center;gap:5px}
+.badge{display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;
+  font-size:9px;font-weight:700;letter-spacing:.5px;font-family:'Share Tech Mono',monospace}
+.blive{background:rgba(0,255,136,.1);border:1px solid var(--g);color:var(--g)}
+.blive .d{width:5px;height:5px;border-radius:50%;background:var(--g);animation:pd 1.5s ease-in-out infinite}
+.bsrv{font-size:8px;padding:2px 7px}
+.bsrv.ok{background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.25);color:var(--gd)}
+.bsrv.err{background:rgba(255,51,102,.07);border:1px solid rgba(255,51,102,.25);color:var(--r)}
+
+.sbar{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;
+  border-bottom:1px solid var(--br);background:rgba(0,255,136,.025);flex-shrink:0}
+.sbar-l{display:flex;align-items:center;gap:8px}
+.slbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--td);letter-spacing:1px}
+.sval{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--g)}
+.sind{display:flex;align-items:center;gap:4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--td)}
+.sdot{width:5px;height:5px;border-radius:50%}
+.sdot.on{background:var(--g);animation:pd 2s ease-in-out infinite}
+.sdot.off{background:var(--r)}
+
+.pbar-wrap{display:flex;gap:5px;padding:7px 12px;border-bottom:1px solid var(--br);
+  background:rgba(6,15,11,.9);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.pbar-wrap::-webkit-scrollbar{display:none}
+.pc{flex-shrink:0;padding:4px 11px;border-radius:20px;font-family:'Orbitron',monospace;
+  font-size:8px;font-weight:700;cursor:pointer;border:1px solid var(--br);
+  color:var(--td);background:transparent;transition:all .2s;white-space:nowrap}
+.pc.has{border-color:rgba(0,255,136,.4);color:var(--gd)}
+.pc.act{background:var(--g);color:#000;border-color:var(--g);box-shadow:0 0 8px var(--gg)}
+
+.content{flex:1;overflow-y:auto;padding:11px;padding-bottom:95px;position:relative;z-index:1}
+.content::-webkit-scrollbar{width:3px}
+.content::-webkit-scrollbar-thumb{background:rgba(0,255,136,.12);border-radius:2px}
+
+.sc{background:var(--cb);border-radius:15px;padding:13px;position:relative;overflow:hidden;
+  margin-bottom:10px;animation:cin .35s cubic-bezier(.34,1.56,.64,1)}
+.sc.call{border:1.5px solid var(--g);box-shadow:0 0 22px rgba(0,255,136,.07),inset 0 0 18px rgba(0,255,136,.02)}
+.sc.put{border:1.5px solid var(--r);box-shadow:0 0 22px rgba(255,51,102,.07),inset 0 0 18px rgba(255,51,102,.02)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;animation:sln 4s ease-in-out infinite}
+.sc.call::before{background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.sc.put::before{background:linear-gradient(90deg,transparent,var(--r),transparent)}
+
+.ct{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px}
+.cico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;flex-shrink:0;font-family:'Orbitron',monospace}
+.cico.up{background:var(--g);color:#000;box-shadow:0 0 10px var(--gg)}
+.cico.dn{background:var(--r);color:#fff;box-shadow:0 0 10px var(--rg)}
+.cmid{flex:1;padding:0 9px;text-align:center}
+.pnm{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:2px}
+.psub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--gd);letter-spacing:2px}
+.crt{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.db{padding:4px 11px;border-radius:7px;font-family:'Orbitron',monospace;font-size:11px;font-weight:900;letter-spacing:1px}
+.db.call{background:var(--g);color:#000;box-shadow:0 0 8px var(--gg)}
+.db.put{background:var(--r);color:#fff;box-shadow:0 0 8px var(--rg)}
+.tfb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:5px;
+  padding:2px 7px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--td)}
+.et{font-family:'Orbitron',monospace;font-size:11px;font-weight:700}
+.et.call{color:var(--g)}.et.put{color:var(--r)}
+
+.frow{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:9px}
+.fc{padding:2px 7px;border-radius:10px;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.5px}
+.fc.on{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);color:var(--g)}
+.fc.off{background:rgba(255,51,102,.07);border:1px solid rgba(255,51,102,.18);color:rgba(255,51,102,.5)}
+
+.strow{display:flex;align-items:center;gap:5px;margin-bottom:9px}
+.std{width:7px;height:7px;border-radius:50%}
+.std.act{background:var(--g);animation:pd 1.5s ease-in-out infinite}
+.std.wait{background:var(--y);animation:pd 1s ease-in-out infinite}
+.stt{font-size:12px;font-weight:600;color:var(--td)}
+
+.wlbl{font-family:'Rajdhani',sans-serif;font-size:9px;color:var(--y);letter-spacing:2px;
+  text-align:center;margin-bottom:1px;font-weight:700;text-transform:uppercase}
+.tmr{font-family:'Orbitron',monospace;font-size:40px;font-weight:700;text-align:center;
+  letter-spacing:3px;margin:3px 0 11px;animation:flk 5s ease-in-out infinite}
+.tmr.call{color:var(--g);text-shadow:0 0 18px var(--gg)}
+.tmr.put{color:var(--r);text-shadow:0 0 18px var(--rg)}
+.tmr.wait{color:var(--y);font-size:26px;text-shadow:0 0 14px var(--yg)}
+
+.pbw{width:100%;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.pb{height:100%;border-radius:2px;transition:width 1s linear}
+.pb.call{background:var(--g)}.pb.put{background:var(--r)}.pb.wait{background:var(--y)}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;gap:9px;text-align:center}
+.eico{font-size:42px;opacity:.2;animation:flt 3s ease-in-out infinite}
+.etxt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--td);letter-spacing:1px}
+
+.sec-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--td);
+  margin-bottom:10px;padding-left:7px;border-left:2px solid var(--g)}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.stat-box{background:var(--bg3);border:1px solid var(--br);border-radius:10px;padding:8px;text-align:center}
+.stat-num{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;margin-bottom:2px}
+.stat-num.green{color:var(--g)}.stat-num.red{color:var(--r)}.stat-num.yellow{color:var(--y)}
+.stat-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--td)}
+
+.hi{background:var(--bg3);border:1px solid var(--br);border-radius:11px;padding:10px 12px;
+  display:flex;align-items:center;gap:9px;margin-bottom:7px;animation:sin .3s ease}
+.hico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;flex-shrink:0;font-family:'Orbitron',monospace}
+.hico.call{background:rgba(0,255,136,.1);color:var(--g);border:1px solid rgba(0,255,136,.22)}
+.hico.put{background:rgba(255,51,102,.1);color:var(--r);border:1px solid rgba(255,51,102,.22)}
+.hinf{flex:1}
+.hpair{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;margin-bottom:1px}
+.hmeta{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--td)}
+.hres{font-family:'Orbitron',monospace;font-size:10px;font-weight:900;padding:2px 9px;border-radius:5px}
+.hres.win{background:rgba(0,255,136,.12);color:var(--g);border:1px solid rgba(0,255,136,.2)}
+.hres.loss{background:rgba(255,51,102,.12);color:var(--r);border:1px solid rgba(255,51,102,.2)}
+
+.page{display:none}.page.active{display:block}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;
+  background:rgba(5,13,10,.97);border-top:1px solid var(--br);
+  display:flex;align-items:center;justify-content:space-around;
+  padding:8px 16px 16px;z-index:100;backdrop-filter:blur(16px)}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  padding:4px 13px;border-radius:9px;border:none;background:none;color:var(--td);flex:1;position:relative}
+.nb.act{color:var(--g)}
+.nico{font-size:19px;line-height:1}
+.nlbl{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;letter-spacing:1px}
+.nbdg{position:absolute;top:0;right:6px;background:var(--g);color:#000;
+  width:14px;height:14px;border-radius:50%;font-size:8px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace}
+.addbtn{width:50px;height:50px;border-radius:50%;background:var(--g);border:none;
+  display:flex;align-items:center;justify-content:center;font-size:22px;color:#000;
+  cursor:pointer;box-shadow:0 0 18px var(--gg);flex-shrink:0;transition:transform .15s}
+.addbtn:active{transform:scale(.92)}
+
+.scanline{position:fixed;top:0;left:0;right:0;max-width:430px;margin:0 auto;
+  height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);
+  animation:sf 1.8s ease-in-out infinite;z-index:50;pointer-events:none;display:none}
+
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.65)}}
+@keyframes sln{0%{transform:translateX(-100%);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(100%);opacity:0}}
+@keyframes sf{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes flk{0%,91%,93%,100%{opacity:1}92%{opacity:.75}}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes sin{from{transform:translateX(14px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes cin{from{transform:scale(.94) translateY(7px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+<div class="scanline" id="scanline"></div>
+
+<div class="hdr">
+  <div class="logo"><span class="fx">Fx</span><span class="b">⚡</span><span class="v">Volt</span></div>
+  <div class="hright">
+    <div class="badge blive"><div class="d"></div>LIVE</div>
+    <div class="badge bsrv ok" id="srvBdg">● SERVER OK</div>
+  </div>
+</div>
+
+<div class="sbar">
+  <div class="sbar-l">
+    <span class="slbl">STRATEGY:</span><span class="sval">RED MAX</span>
+    <span class="slbl" style="margin-left:6px">TF:</span><span class="sval">M1</span>
+    <span class="slbl" style="margin-left:6px">EXP:</span><span class="sval">1MIN</span>
+  </div>
+  <div class="sind" id="sindEl"><div class="sdot on"></div><span id="stxt">CONNECTING...</span></div>
+</div>
+
+<div class="pbar-wrap" id="pairBar"></div>
+
+<div class="content">
+  <div id="page-signal" class="page active">
+    <div id="sigCont"></div>
+  </div>
+  <div id="page-history" class="page">
+    <div class="sec-title">SIGNAL HISTORY — LAST 24H</div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num green" id="stW">0</div><div class="stat-lbl">WIN</div></div>
+      <div class="stat-box"><div class="stat-num red" id="stL">0</div><div class="stat-lbl">LOSS</div></div>
+      <div class="stat-box"><div class="stat-num yellow" id="stWR">0%</div><div class="stat-lbl">WIN RATE</div></div>
+    </div>
+    <div id="histList"></div>
+  </div>
+</div>
+
+<div class="bnav">
+  <button class="nb act" id="navSignal" onclick="goPage('signal')">
+    <div class="nico">📡</div><div class="nlbl">SIGNAL</div>
+    <div class="nbdg" id="nbdg" style="display:none">0</div>
+  </button>
+  <button class="addbtn" onclick="goPage('history')">📋</button>
+  <button class="nb" id="navHistory" onclick="goPage('history')">
+    <div class="nico">🕐</div><div class="nlbl">HISTORY</div>
+  </button>
+</div>
+
+<script>
+// ══════════════════════════════
+// CONFIG — change to your Render URL after deploy
+// ══════════════════════════════
+const SERVER_URL = window.location.origin; // auto-detect when hosted on Render
+
+const PAIRS = ['EURUSD','GBPUSD','USDJPY','AUDUSD','USDCAD','NZDUSD','GBPJPY','EURJPY','XAUUSD'];
+let activeSignals = [];
+let historySignals = [];
+let timers = {};
+let serverOk = false;
+
+// ══════════════════════════════
+// FETCH FROM SERVER
+// ══════════════════════════════
+async function fetchActive() {
+  try {
+    const r = await fetch(`${SERVER_URL}/api/signals/active`);
+    const data = await r.json();
+    if(data.ok) {
+      setServerStatus(true);
+      return data.signals;
+    }
+  } catch(e) { setServerStatus(false); }
+  return [];
+}
+
+async function fetchHistory() {
+  try {
+    const r = await fetch(`${SERVER_URL}/api/signals/history`);
+    const data = await r.json();
+    if(data.ok) return data.signals;
+  } catch(e) {}
+  return [];
+}
+
+async function fetchStats() {
+  try {
+    const r = await fetch(`${SERVER_URL}/api/stats`);
+    const data = await r.json();
+    if(data.ok) {
+      document.getElementById('stW').textContent = data.wins;
+      document.getElementById('stL').textContent = data.losses;
+      document.getElementById('stWR').textContent = data.winRate+'%';
+    }
+  } catch(e) {}
+}
+
+function setServerStatus(ok) {
+  serverOk = ok;
+  const el = document.getElementById('srvBdg');
+  const sd = document.getElementById('sindEl');
+  if(ok) {
+    el.textContent='● SERVER OK'; el.className='badge bsrv ok';
+    sd.innerHTML='<div class="sdot on"></div><span>LIVE 24/7</span>';
+  } else {
+    el.textContent='● OFFLINE'; el.className='badge bsrv err';
+    sd.innerHTML='<div class="sdot off"></div><span>RECONNECTING...</span>';
+  }
+}
+
+// ══════════════════════════════
+// POLL SERVER every 5s
+// ══════════════════════════════
+async function poll() {
+  const sigs = await fetchActive();
+
+  // Merge with local state — update existing, add new
+  for(const sig of sigs) {
+    const existing = activeSignals.find(s=>s.id===sig.id);
+    if(!existing) {
+      activeSignals.push(sig);
+    } else {
+      existing.status = sig.status;
+    }
+  }
+
+  // Remove signals no longer active on server
+  const serverIds = sigs.map(s=>s.id);
+  const removed = activeSignals.filter(s=>!serverIds.includes(s.id));
+  for(const sig of removed) {
+    clearInterval(timers[sig.id]);
+    delete timers[sig.id];
+  }
+  activeSignals = activeSignals.filter(s=>serverIds.includes(s.id));
+
+  renderSignals();
+  updateBadge();
+
+  // Start timers for any new signals
+  for(const sig of activeSignals) {
+    if(!timers[sig.id]) startTimer(sig);
+  }
+}
+
+// ══════════════════════════════
+// RENDER
+// ══════════════════════════════
+function buildPairBar() {
+  const activePairs = activeSignals.map(s=>s.pair);
+  document.getElementById('pairBar').innerHTML = PAIRS.map(p =>
+    `<div class="pc ${activePairs.includes(p)?'has':''}">${p.slice(0,3)+'/'+p.slice(3)}</div>`
+  ).join('');
+}
+
+function renderSignals() {
+  buildPairBar();
+  const c = document.getElementById('sigCont');
+  if(!activeSignals.length) {
+    c.innerHTML=`<div class="empty">
+      <div class="eico">📡</div>
+      <div class="etxt">NO SIGNAL YET</div>
+      <div class="etxt" style="font-size:8px;margin-top:4px">SERVER SCANNING 9 PAIRS · M1</div>
+      <div class="etxt" style="font-size:8px;margin-top:2px;color:var(--y)">WAITING FOR RSY + VC + TDF TO ALIGN</div>
+    </div>`;
+    return;
+  }
+  c.innerHTML = activeSignals.map(renderCard).join('');
+}
+
+function renderCard(s) {
+  const isC=s.dir==='CALL', isW=s.status==='waiting';
+  const f=s.filters||{RSY:true,RSY2:true,VC:true,TDF:true};
+  const now=Date.now();
+  const ref = isW ? s.entry_ts : s.expiry_ts;
+  const diff = Math.max(0, ref-now);
+  const secs = Math.floor(diff/1000);
+  const timerStr = f2(Math.floor(secs/60))+':'+f2(secs%60);
+  const pct = isW
+    ? Math.min(100,(diff/Math.max(1,s.entry_ts-s.created_at))*100)
+    : Math.max(0,(diff/60000)*100);
+
+  return `<div class="sc ${isC?'call':'put'}" id="card-${s.id}">
+    <div class="ct">
+      <div class="cico ${isC?'up':'dn'}">${isC?'↑':'↓'}</div>
+      <div class="cmid">
+        <div class="pnm">${s.pair.slice(0,3)+'/'+s.pair.slice(3)}</div>
+        <div class="psub">◆ PREMIUM FX ◆</div>
+      </div>
+      <div class="crt">
+        <div class="db ${isC?'call':'put'}">${s.dir}</div>
+        <div class="tfb">M1</div>
+        <div class="et ${isC?'call':'put'}">${s.entry_time}</div>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fc ${f.RSY?'on':'off'}">RSY1</div>
+      <div class="fc ${f.RSY2?'on':'off'}">RSY2</div>
+      <div class="fc ${f.VC?'on':'off'}">VC</div>
+      <div class="fc ${f.TDF?'on':'off'}">TDF</div>
+    </div>
+    <div class="strow">
+      <div class="std ${isW?'wait':'act'}"></div>
+      <div class="stt">${isW?'Waiting for entry...':'🔴 Active — 1 min'}</div>
+    </div>
+    ${isW?'<div class="wlbl">⏳ ENTRY IN</div>':''}
+    <div class="tmr ${isW?'wait':(isC?'call':'put')}" id="tmr-${s.id}">${timerStr}</div>
+    <div class="pbw"><div class="pb ${isW?'wait':(isC?'call':'put')}" id="pb-${s.id}" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+// ══════════════════════════════
+// TIMERS (local display only)
+// ══════════════════════════════
+function startTimer(sig) {
+  if(timers[sig.id]) return;
+  timers[sig.id] = setInterval(()=>tickDisplay(sig), 1000);
+}
+
+function tickDisplay(sig) {
+  const now = Date.now();
+  const te = document.getElementById('tmr-'+sig.id);
+  const pb = document.getElementById('pb-'+sig.id);
+  if(!te) { clearInterval(timers[sig.id]); delete timers[sig.id]; return; }
+
+  const isW = sig.status==='waiting';
+  const ref = isW ? sig.entry_ts : sig.expiry_ts;
+  const diff = Math.max(0, ref-now);
+  const secs = Math.floor(diff/1000);
+  te.textContent = f2(Math.floor(secs/60))+':'+f2(secs%60);
+  const pct = isW
+    ? Math.min(100,(diff/Math.max(1,sig.entry_ts-sig.created_at))*100)
+    : Math.max(0,(diff/60000)*100);
+  if(pb) pb.style.width=pct+'%';
+}
+
+// ══════════════════════════════
+// HISTORY
+// ══════════════════════════════
+async function loadHistory() {
+  historySignals = await fetchHistory();
+  await fetchStats();
+  const list = document.getElementById('histList');
+  if(!historySignals.length) {
+    list.innerHTML=`<div class="empty" style="padding:30px 0">
+      <div class="eico">📋</div><div class="etxt">NO HISTORY YET</div>
+    </div>`;
+    return;
+  }
+  list.innerHTML = historySignals.map(h=>{
+    const isC=h.dir==='CALL', isW=h.result==='WIN';
+    return `<div class="hi">
+      <div class="hico ${isC?'call':'put'}">${isC?'↑':'↓'}</div>
+      <div class="hinf">
+        <div class="hpair">${h.pair.slice(0,3)+'/'+h.pair.slice(3)}</div>
+        <div class="hmeta">M1 · ${h.entry_time} · ${timeSince(h.created_at)}</div>
+      </div>
+      <div class="hres ${isW?'win':'loss'}">${h.result}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════
+// UTILS
+// ══════════════════════════════
+function goPage(p) {
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('act'));
+  document.getElementById('page-'+p).classList.add('active');
+  const nb = document.getElementById('nav'+p.charAt(0).toUpperCase()+p.slice(1));
+  if(nb) nb.classList.add('act');
+  if(p==='history') loadHistory();
+}
+function updateBadge(){
+  const b=document.getElementById('nbdg');
+  activeSignals.length?(b.style.display='flex',b.textContent=activeSignals.length):b.style.display='none';
+}
+function timeSince(ts){
+  const d=Date.now()-ts;
+  if(d<60000) return Math.floor(d/1000)+'s ago';
+  if(d<3600000) return Math.floor(d/60000)+'m ago';
+  return Math.floor(d/3600000)+'h ago';
+}
+function f2(n){return String(n).padStart(2,'0');}
+
+// ══════════════════════════════
+// START
+// ══════════════════════════════
+async function init() {
+  renderSignals();
+  await poll();
+  // Poll server every 5 seconds
+  setInterval(poll, 5000);
+}
+init();
+</script>
+</body>
+</html>
